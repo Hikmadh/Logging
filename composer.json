@@ -42,7 +42,7 @@
             "registration.php"
         ],
         "psr-4": {
-            "Hikmadh\\Test\\": ""
+            "Hikmadh\\Log\\": ""
         }
     }
 }
