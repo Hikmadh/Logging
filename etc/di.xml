@@ -1,0 +1,92 @@
+<?xml version="1.0"?>
+<!--
+/**
+ * Copyright © 2021 Hikmadh. All rights reserved.
+ * See COPYING.txt for license details.
+ */
+-->
+<config xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xsi:noNamespaceSchemaLocation="urn:magento:framework:ObjectManager/etc/config.xsd">
+
+    <!-- API custom logging handler -->
+    <virtualType name="HikmadhDebugHandler" type="Magento\Framework\Logger\Handler\Base">
+        <arguments>
+            <argument name="fileName" xsi:type="string">/var/log/hikmadh-logging.log</argument>
+        </arguments>
+    </virtualType>
+    <virtualType name="HikmadhLogger" type="Magento\Framework\Logger\Monolog">
+        <arguments>
+            <argument name="handlers" xsi:type="array">
+                <item name="debug" xsi:type="object">HikmadhDebugHandler</item>
+            </argument>
+        </arguments>
+    </virtualType>
+
+    <!-- API Plugins for Rest Logging-->
+    <type name="Magento\Webapi\Controller\Rest">
+        <plugin name="hikmadh_log_magento_webapi_rest" type="Hikmadh\Log\Plugin\Magento\Webapi\Controller\RestPlugin"/>
+    </type>
+
+    <!-- Set API Logger-->
+    <type name="Hikmadh\Log\Plugin\Magento\Webapi\Controller\RestPlugin">
+        <arguments>
+            <argument name="logger" xsi:type="object">HikmadhLogger</argument>
+        </arguments>
+    </type>
+
+    <!-- ES Logging -->
+    <type name="Magento\Elasticsearch\Model\Config">
+        <plugin name="hikmadh_log_set_es_logger" type="Hikmadh\Log\Plugin\Magento\Elasticsearch\Model\ConfigPlugin"/>
+    </type>
+    <type name="Hikmadh\Log\Plugin\Magento\Elasticsearch\Model\ConfigPlugin">
+        <arguments>
+            <argument name="logger" xsi:type="object">HikmadhLogger</argument>
+        </arguments>
+    </type>
+    <type name="Hikmadh\Log\Model\GraphQlLogger">
+        <arguments>
+            <argument name="logger" xsi:type="object">HikmadhLogger</argument>
+        </arguments>
+    </type>
+
+    <!-- GraphQl Logging -->
+    <type name="Magento\GraphQl\Helper\Query\Logger\LogData">
+        <plugin name="hikmadh_log_add_graphql_log" type="Hikmadh\Log\Plugin\Magento\GraphQl\Helper\Query\Logger\LogDataPlugin"/>
+    </type>
+    <type name="Magento\GraphQl\Model\Query\Logger\LoggerPool">
+        <arguments>
+            <argument name="loggers" xsi:type="array">
+                <item name="hikmadh_es_logger" xsi:type="object">Hikmadh\Log\Model\GraphQlLogger</item>
+            </argument>
+        </arguments>
+    </type>
+    <!-- Varnish Logging -->
+    <type name="Magento\CacheInvalidate\Model\PurgeCache">
+        <plugin name="hikmadh_log_varnish" type="Hikmadh\Log\Plugin\Magento\CacheInvalidate\Model\PurgeCachePlugin"/>
+    </type>
+
+    <!-- Set Varnish Logger-->
+    <type name="Hikmadh\Log\Plugin\Magento\CacheInvalidate\Model\PurgeCachePlugin">
+        <arguments>
+            <argument name="logger" xsi:type="object">HikmadhLogger</argument>
+        </arguments>
+    </type>
+
+    <!-- RabbitMQ Logging -->
+    <type name="Magento\Framework\MessageQueue\Publisher">
+        <plugin name="hikmadh_log_add_rabbitmq_log_publisher" type="Hikmadh\Log\Plugin\Magento\Framework\MessageQueue\PublisherPlugin"/>
+    </type>
+    <type name="Hikmadh\Log\Plugin\Magento\Framework\MessageQueue\PublisherPlugin">
+        <arguments>
+            <argument name="logger" xsi:type="object">HikmadhLogger</argument>
+        </arguments>
+    </type>
+    <type name="Magento\Framework\Amqp\Queue">
+        <plugin name="hikmadh_log_add_rabbitmq_log_subscriber" type="Hikmadh\Log\Plugin\Magento\Framework\Amqp\QueuePlugin"/>
+    </type>
+    <type name="Hikmadh\Log\Plugin\Magento\Framework\Amqp\QueuePlugin">
+        <arguments>
+            <argument name="logger" xsi:type="object">HikmadhLogger</argument>
+        </arguments>
+    </type>
+</config>
