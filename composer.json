@@ -1,6 +1,6 @@
 {
     "name": "hikmadh/log",
-    "description": "This is a Logging module",
+    "description": "A very lightweight logging module",
     "type": "magento2-module",
     "keywords": [
         "php",
@@ -12,7 +12,7 @@
         "settings",
         "config"
     ],
-    "homepage": "https://redchamps.com/clean-admin-menu-magento-2-extension.html",
+    "homepage": "https://hikmadh.com/",
     "readme": "README.md",
     "license": [
         "MIT"
